@@ -1,22 +1,32 @@
 "use client";
 
+import "easymde/dist/easymde.min.css"
 import { TCategory } from "@/app/types";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CldUploadButton, CldUploadWidgetResults } from "next-cloudinary";
+import { CldUploadButton, CloudinaryUploadWidgetResults,  } from "next-cloudinary";
 import Image from "next/image";
 import toast from "react-hot-toast";
-
+import JuditEditor from 'jodit-react'
+import { useRef } from "react";
+ 
+ 
 export default function CreatePostForm() {
   const [links, setLinks] = useState<string[]>([]);
   const [linkInput, setLinkInput] = useState("");
+  
   const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
   const [categories, setCategories] = useState<TCategory[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [publicId, setPublicId] = useState("");
+  
+  const editor = useRef(null)
+const [content, setContent] = useState("");
+const config = {
+   placeholder:"Start typing.."
+}
 
   const router = useRouter();
 
@@ -27,10 +37,10 @@ export default function CreatePostForm() {
       setCategories(catNames);
     };
 
-    fetchAllCategories();
+    fetchAllCategories(); 
   }, []);
 
-  const handleImageUpload = (result: CldUploadWidgetResults) => {
+  const handleImageUpload = (result: CloudinaryUploadWidgetResults) => {
     console.log("result: ", result);
     const info = result.info as object;
 
@@ -121,11 +131,11 @@ export default function CreatePostForm() {
           type="text"
           placeholder="Title"
         />
-        <textarea
-          onChange={(e) => setContent(e.target.value)}
-          placeholder="Content"
-        ></textarea>
-
+        <JuditEditor
+        ref={editor}
+        value={content}
+        onChange={newContent=>setContent(newContent)}
+        />
         {links &&
           links.map((link, i) => (
             <div key={i} className="flex items-center gap-4">
